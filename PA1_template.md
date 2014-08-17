@@ -2,48 +2,55 @@
 
 
 ## Loading and preprocessing the data
-``` {r preprocessing}
+
+```r
 data <- read.csv("activity.csv")
 data$date <- as.Date(data$date)
 ```
 
 ## What is mean total number of steps taken per day?
 
-``` {r meanStepsCalculation, fig.height=10}
 
+```r
 stepsByDate <- aggregate(steps ~ date , data , sum)
 
 hist(stepsByDate$steps, main="Histogram of the total number of steps taken each day", xlab="Number of steps per day")
+```
 
+![plot of chunk meanStepsCalculation](figure/meanStepsCalculation.png) 
+
+```r
 m1 <- mean(stepsByDate$step)
 
 m2 <- median(stepsByDate$step)
-
 ```
 
-The mean of total number of steps taken per day is `r m1`.  
-The median of total number of steps taken per day is `r m2`.  
+The mean of total number of steps taken per day is 1.0766 &times; 10<sup>4</sup>.  
+The median of total number of steps taken per day is 10765.  
 
 
 ## What is the average daily activity pattern?
 
-``` {r averageActivityPattern, fig.height=10}
 
+```r
 averageStepsPerInterval <- aggregate(steps ~ interval, data , mean)
 
 plot(averageStepsPerInterval$interval,averageStepsPerInterval$steps, type="l", main="Time series plot of average number of steps per interval", xlab="Time Interval", ylab="Number of steps")
-
-intervalWithMaxSteps <- averageStepsPerInterval[averageStepsPerInterval$steps == max(averageStepsPerInterval$steps),1]
-
 ```
 
-`r intervalWithMaxSteps` interval contains the maximum number of steps.  
+![plot of chunk averageActivityPattern](figure/averageActivityPattern.png) 
+
+```r
+intervalWithMaxSteps <- averageStepsPerInterval[averageStepsPerInterval$steps == max(averageStepsPerInterval$steps),1]
+```
+
+835 interval contains the maximum number of steps.  
 
 
 ## Imputing missing values
 
-``` {r missingValuesProcessing, fig.height=10}
 
+```r
 missingDataRows <- nrow(data[is.na(data$steps),])
 
 completeData <- data
@@ -56,23 +63,26 @@ for(id in 1:nrow(completeData)){
 stepsByDate1 <- aggregate(steps ~ date , completeData , sum)
 
 hist(stepsByDate1$steps, main="Histogram of the total number of steps taken each day", xlab="Number of steps per day")
+```
 
+![plot of chunk missingValuesProcessing](figure/missingValuesProcessing.png) 
+
+```r
 m1New <- median(stepsByDate1$step)
 
 m2New <- mean(stepsByDate1$step)
-
 ```
 
-The total number of missing values in the dataset is `r missingDataRows`  
-The mean of total number of steps taken per day is `r m1New`.  
-The median of total number of steps taken per day is `r m2New`.  
-New mean is `r if(m1 > m1New) "lesser than " else if(m1 < m1New) "greater than " else "same as "` old value.  
-New median is `r if(m2 > m2New) "lesser than " else if(m2 < m2New) "greater than " else "same as "` old value.  
+The total number of missing values in the dataset is 2304  
+The mean of total number of steps taken per day is 1.0766 &times; 10<sup>4</sup>.  
+The median of total number of steps taken per day is 1.0766 &times; 10<sup>4</sup>.  
+New mean is same as  old value.  
+New median is greater than  old value.  
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-``` {r weekdayAndWeekendPattern, fig.height=10}
 
+```r
 completeData$WeekdayType <- NA
 completeData$WeekdayType[weekdays(completeData$date) %in% c("Saturday", "Sunday")] <- "weekend"
 completeData$WeekdayType[is.na(completeData$WeekdayType)] <- "weekday"
@@ -84,6 +94,6 @@ par(mfcol = c(2, 1), mar = c(5, 4, 1, 1))
 
 plot(weekendStepsPerInterval$interval,weekendStepsPerInterval$steps, type="l", main="weekend", xlab="Interval", ylab="Number of steps")
 plot(weekdayStepsPerInterval$interval,weekdayStepsPerInterval$steps, type="l", main="weekday", xlab="Interval", ylab="Number of steps")
-
-
 ```
+
+![plot of chunk weekdayAndWeekendPattern](figure/weekdayAndWeekendPattern.png) 
